@@ -3,6 +3,7 @@ let availableDisplays = config.displays;
 import display from './display.js';
 import admin from './admin.js';
 import adminLobby from './adminLobby.js';
+import settings from './settings.js';
 import cli from './cli.js';
 import _bundleManager from './bundleManager.js';
 import chalk from 'chalk';
@@ -72,12 +73,16 @@ export default function (pluginManager, io, dispatcher) {
 
     // create screens and admin socket interfaces
     for (let metadata of availableDisplays) {
-        let view = new display(io, dispatcher, metadata, screenId, bundleManager);
+        if (!metadata.id) {
+            metadata.id = screenId;
+        }
+        let view = new display(io, dispatcher, metadata, /*metadata.id*/screenId, bundleManager);
         screenView.push(view);
-        adminView.push(new admin(io, dispatcher, view, screenId, bundleManager));
+        adminView.push(new admin(io, dispatcher, view, /*metadata.id*/screenId, bundleManager));
         screenId += 1;
     }
 
+    let settingsHandler = new settings(io, dispatcher, screenView, adminView, bundleManager);
     let adminLobby1 = new adminLobby(io, dispatcher, screenView, adminView, bundleManager);
     // create lobby
     io.of("/lobby").on("connection", function (socket) {

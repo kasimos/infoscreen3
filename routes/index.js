@@ -61,12 +61,13 @@ export default function (pluginManager, websocket, dispatcher) {
     });
 
     router.get('/display/:id/lite', function (req, res, next) {
-        let idx = parseInt(req.params.id);
+        let idx = req.params.id;
         let volume = req.query['videoVolume'] || 1.;
         let extra = pluginManager.getDisplayAdditions();
+        let display = Number.isInteger(idx) ? availableDisplays[parseInt(idx)] : availableDisplays.find((d) => d.uuid === idx);
         return res.render('liteDisplay', {
             config: config,
-            display: availableDisplays[idx],
+            display: display,
             displayId: idx,
             extra: extra,
             videoVolume: volume

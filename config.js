@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import SettingsManager from './modules/settingsManager.js'
 
 const host = "127.0.0.1"  // ip of the infoscreen interface, use external address if not develoment
 const port = 8000;        // port for infoscreen
@@ -10,7 +11,7 @@ if (process.env.FRONT_PROXY == "true") hostUrl = "https://" + (process.env.HOST 
 // By default add 4:3 guardrails to have a backward compatible behavior
 // Allow any kind of other line to be configured in a json representation
 // of this array in the .env file
-let guardRails = [{
+let defaultGuardRails = [{
     line: [240, 0, 240, 1080],
     stroke: "#ccc",
     strokeWidth: 4,
@@ -22,8 +23,15 @@ let guardRails = [{
     strokeWidth: 4,
     opacity: 0.5
 }]
-if (process.env.GUARDRAILS) {
-    guardRails = JSON.parse(process.env.GUARDRAILS)
+
+let settingsData = new SettingsManager().loadSettings();
+if (process.env.OVERRIDE_SETTINGS) {
+    settingsData.streamKey = process.env.STREAMKEY;
+    settingsData.streamName = process.env.STREAMNAME;
+    settingsData.streamKey = process.env.STREAMKEY;
+    settingsData.streamProtocol = process.env.STREAMPROTOCOL;
+    settingsData.accesskey = process.env.ACCESSKEY;
+    settingsData.guardRails = JSON.parse(process.env.GUARDRAILS);
 }
 
 export default {
@@ -31,12 +39,14 @@ export default {
     "serverHost": process.env.HOST || host,
     "serverUrl": hostUrl,
     "sessionKey": process.env.SESSIONKEY || "generateSecret", // used for encrypting cookies
-    "streamKey": process.env.STREAMKEY || 'INFOSCREEN3',  // stream key for rtmp end point
+    "streamKey": settingsData.streamKey || 'INFOSCREEN3',  // stream key for rtmp end point
+    "streamName": settingsData.streamName || 'live',
+    "streamProtocol": settingsData.streamProtocol || 'http',
     "useLocalAssets": false,    // used to load javascript libraries locally from /public/assets
-    "mediaServer": (process.env.MEDIASERVER == "true") ? true : false,       // local streaming server for rtmp, see docs how to use
+    "mediaServer": true,//(process.env.MEDIASERVER == "true") ? true : false,       // local streaming server for rtmp, see docs how to use
     "defaultLocale": process.env.LOCALE || "en",      // currently supported values are: "en","fi"
-    "accesskey": process.env.ACCESSKEY || false,
-    "guardRails": guardRails,
+    "accesskey": settingsData.accesskey || false,
+    "guardRails": settingsData.guardRails || defaultGuardRails,
     /*
      * Plugins
      */
@@ -72,15 +82,5 @@ export default {
             }
         }
     ],
-    "displays":
-        [
-            {
-                "name": "Main Screen",
-                "bundle": "default"
-            },
-            {
-                "name": "Secondary Screen",
-                "bundle": "default"
-            },
-        ]
+    "displays": settingsData.displays
 };

@@ -281,6 +281,12 @@ export default function (pluginManager, websocket, dispatcher) {
         });
     });
 
+    router.get('/settings', function (req, res, next) {
+        return res.render('admin/settings', {
+            config: config
+        });
+    });
+
     pluginManager.callMethod('onAdminRouter', router);
 
     return router;

@@ -57,8 +57,10 @@ export default class display {
          * @type {bundleManager|module:infoscreen3/bundleManager}
          */
         this.bundleManager = bundleManager;
+        this.namespace = "/display-" + displayId.toString()
 
-        let io = sharedIO.of("/display-" + displayId.toString());
+        let io = sharedIO.of(this.namespace);
+        this.sharedIO = sharedIO
         this.io = io;
         this.name = meta.name;
         this.dispatcher = dispatcher;
@@ -70,37 +72,40 @@ export default class display {
          * @listens event:announce
          *
          */
-
-        dispatcher.on("all.override", function (data) {
-            self.overrideSlide(data.json, data.png, data.duration);
-            self.displayCurrentSlide();
-        });
-
-        dispatcher.on("display.recalcBundleData", function (bundleName) {
-            if (self.serverOptions.currentBundle === bundleName) {
+        this.dispatcherHooks = {
+            "all.override": function (data) {
+                self.overrideSlide(data.json, data.png, data.duration);
+                self.displayCurrentSlide();
+            },
+            "display.recalcBundleData": function (bundleName) {
+                if (self.serverOptions.currentBundle === bundleName) {
                 for (let slide of self.getBundle()?.allSlides) {
                     // calculate new index for next slide;
                     if (slide.uuid === self.serverOptions.currentFile) {
                         self.serverOptions.loopIndex = slide.index + 1;
                     }
                 }
-            }
-        });
-
-        dispatcher.on("announce", function (obj) {
-            // if global announce, ie screens is null
-            if (obj.screens === null) {
-                io.emit(obj.event, obj.data);
-            } else {
-                // screens is array
-                for (let screen of obj.screens) {
-                    // so if match, emit data from here
-                    if (screen === displayId) {
-                        io.emit(obj.event, obj.data);
+                }
+            },
+            "announce": function (obj) {
+                // if global announce, ie screens is null
+                if (obj.screens === null) {
+                    io.emit(obj.event, obj.data);
+                } else {
+                    // screens is array
+                    for (let screen of obj.screens) {
+                        // so if match, emit data from here
+                        if (screen === displayId) {
+                            io.emit(obj.event, obj.data);
+                        }
                     }
                 }
             }
-        });
+        }
+        for (let event in this.dispatcherHooks) {
+            cli.info("adding dispatcher listener on" + event);            
+            this.dispatcher.on(event, this.dispatcherHooks[event]);
+        }
 
         io.on("connection",
             /**
@@ -133,6 +138,17 @@ export default class display {
     init(meta) {
         this.io.emit("callback.reload");
         this.changeBundle(meta.bundle);
+    }
+
+    destroy() {
+        for (let event in this.dispatcherHooks) {
+            cli.info("removing dispatcher listener on" + event);  
+            this.dispatcher.removeListener(event, this.dispatcherHooks[event]);
+        }
+        // disconnecting all sockets and deleting from a private array
+        // seems to be the only way to properly remove the namespace
+        this.sharedIO.of(this.namespace).local.disconnectSockets();
+        this.sharedIO._nsps.delete(this.namespace);
     }
 
 

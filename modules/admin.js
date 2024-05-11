@@ -1,6 +1,7 @@
 import fs from 'fs';
 import config from '../config.js';
 import cli from './cli.js';
+import SettingsManager from './settingsManager.js';
 
 /** Generate an uuid
  * @url https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript#2117523 **/
@@ -10,6 +11,8 @@ function uuidv4() {
         return v.toString(16);
     });
 }
+
+let settingsManager = new SettingsManager()
 
 /**
  *
@@ -132,9 +135,11 @@ export default class admin {
 
                 if (serverOptions.isStreaming === false) {
                     serverOptions.loop = false;
-                    // changed next line from http:// to ws://, to reduce stream lag                    
+                    // changed next line from http:// to ws://, to reduce stream lag  
+                    let protocol = config.streamProtocol
+                    let streamPort = (parseInt(config.serverListenPort) + 1)        
 
-                    serverOptions.streamSource = "http://" + config.serverHost + ":" + (parseInt(config.serverListenPort) + 1) + "/live/" + config.streamKey + ".flv";
+                    serverOptions.streamSource = protocol + "://" + config.serverHost + ":" + streamPort + "/"+ config.streamName +"/" + config.streamKey + ".flv";
                     serverOptions.isStreaming = true;
                     cli.success("start stream");
                 } else {
@@ -246,6 +251,8 @@ export default class admin {
             socket.on('admin.setBundle', function (data) {
                 self.screenView.changeBundle(data.bundle);
                 self.updateDashboard(io);
+                config.displays.find((d) => d.id === displayId).bundle = data.bundle;
+                settingsManager.saveSettings();
             });
 
             socket.on('admin.dashboard.sync', function () {
@@ -501,6 +508,11 @@ export default class admin {
 
                 self.getServerOptions().transition = transition;
                 self.updateDashboard(io);
+            });
+
+            socket.on('admin.editGuardrails', function (data) {
+                config.guardRails = data.guardRails;
+                settingsManager.saveSettings();
             });
 
             socket.on('edit.saveTemplate', function (data) {
