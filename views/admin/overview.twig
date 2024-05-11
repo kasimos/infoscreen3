@@ -14,6 +14,14 @@
             <h1 class="ui center aligned inverted header">
                 {{ t ("infoscreen") }}
             </h1>
+            <div class="right menu">
+                <div class="item">
+                    <a href="/admin/settings" class="ui green basic button">{{ t("actions.settings") }}</a>
+                </div>
+                <div class="item">
+                    <a href="/logout" class="ui red basic button">{{ t("auth.logout") }}</a>
+                </div>
+            </div>
             <h2 class="ui center aligned inverted dividing header">{{ t("index.displays") }}</h2>
 
             <div class="ui three stackable cards" id="displayList">
@@ -29,22 +37,22 @@
                             <!-- Controls -->
                             <div class="ui inverted buttons">
                                 <button class="ui icon button"
-                                        onclick="socket.emit('controls.previous', {displayId: parseInt({{ loop.index0 }})});">
+                                        onclick="socket.emit('controls.previous', {displayId: parseInt({{ display.id }})});">
                                     <i class="step backward icon"></i>
                                 </button>
 
                                 <button id="play{{ loop.index0 }}" class="ui icon button"
-                                        onclick="socket.emit('controls.play', {displayId: parseInt({{ loop.index0 }})});">
+                                        onclick="socket.emit('controls.play', {displayId: parseInt({{ display.id }})});">
                                     <i class="play icon"></i>
                                 </button>
 
                                 <button id="pause{{ loop.index0 }}" class="ui icon button"
-                                        onclick="socket.emit('controls.pause', {displayId: parseInt({{ loop.index0 }})});">
+                                        onclick="socket.emit('controls.pause', {displayId: parseInt({{ display.id }})});">
                                     <i class="pause icon"></i>
                                 </button>
 
                                 <button class="ui icon button"
-                                        onclick="socket.emit('controls.next', {displayId: parseInt({{ loop.index0 }})});">
+                                        onclick="socket.emit('controls.next', {displayId: parseInt({{ display.id }})});">
                                     <i class="step forward icon"></i>
                                 </button>
                             </div>

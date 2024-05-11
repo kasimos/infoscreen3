@@ -7,6 +7,7 @@
     "logout": "Logout"
   },
   "actions": {
+    "settings": "Settings",
     "upload": "Upload",
     "uploadScale": "Upload and scale 16:9",
     "save": "Save",
@@ -40,7 +41,8 @@
     "override": "override",
     "duration": "duration",
     "display": "display",
-    "slideName": "Slide Name"
+    "slideName": "Slide Name",
+    "editGuardrail": "Guardrail Editmode"
   },
   "admin": {
     "dashboard": {
@@ -134,7 +136,20 @@
       "fontMinus": "Decrease font size",
       "centerHorizontal": "Center Horizontal",
       "centerVertical": "Center Vertical",
-      "undo": "Undo last action"
+      "undo": "Undo last action",
+      "guardrailsUndo": "Reset guardrails",
+      "guardrailsSave": "Save guardrails to file"
+    },
+    "settings": {
+      "home": "Home",
+      "displays": "Displays",
+      "guardrails": "Guard Rails",
+      "otherSettings": "Other Settings",
+      "createNewDisplay": "Create New Display",
+      "accesskey": "Accesskey",
+      "streamKey": "Streamkey",
+      "streamName": "Streamname",
+      "streamProtocol": "StreamProtocol"
     }
   },
   "index": {

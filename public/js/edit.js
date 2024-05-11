@@ -202,6 +202,43 @@ $("#contextmenu .item").click(function () {
     $("#contextmenu").hide(100);
 });
 
+$("#guardrail-edit").change(function () {
+    let guardrailLines = canvas.getObjects('line').filter((a) => a.isGuardrail === true);
+    let newValue = $(this)[0].checked;
+    guardrailLines.forEach((guardrail) => {
+        guardrail.set({selectable: newValue});
+    });
+    if(newValue) {
+        $("#guardrail-reset")[0].classList.remove("hidden-button");
+        $("#guardrail-save")[0].classList.remove("hidden-button");
+    } else {
+        $("#guardrail-reset")[0].classList.add("hidden-button");
+        $("#guardrail-save")[0].classList.add("hidden-button");
+    }
+});
+
+$("#guardrail-reset").click(function () {
+    let guardrailLines = canvas.getObjects('line').filter((a) => a.isGuardrail === true);
+    guardrailLines.forEach((guardrail) => {
+        canvas.remove(guardrail);
+    });
+    drawGuardrails();
+});
+
+$("#guardrail-save").click(function () {
+    let guardrailLines = canvas.getObjects('line').filter((a) => a.isGuardrail === true);
+    let newGuardrails = guardrailLines.map((g) => {
+        let gCoords = g.getCoords();
+        return {
+            line: [gCoords[0].x,gCoords[0].y,gCoords[2].x-g.strokeWidth,gCoords[2].y-g.strokeWidth].map(Math.round),
+            stroke: g.stroke,
+            strokeWidth: g.strokeWidth,
+            opacity: g.opacity
+        }
+    });
+    socket.emit('admin.editGuardrails', { guardRails: newGuardrails });
+});
+
 function saveState() {
     if (undoData.length >= 15) {
         undoData.shift();
@@ -518,6 +555,22 @@ function parseUrl(url) {
     return '/background' + url.split('background')[1]
 }
 
+function drawGuardrails() {
+    let w = 1920 / 32 / 8;
+    let editMode = $("#guardrail-edit")[0].checked;
+    guardRails.forEach((guardRail) => {
+        canvas.add(new fabric.Line(guardRail.line, {
+            stroke: guardRail.stroke || '#ccc',
+            strokeDashArray: [w, w],
+            strokeWidth: guardRail.strokeWidth || 4,
+            opacity: guardRail.opacity || 0.5,
+            selectable: editMode,
+            isGuardrail: true,
+            zIndex: -1
+        }));
+    })
+}
+
 function drawGrid() {
     var w = 1920 / 32 / 8;
 
@@ -542,16 +595,7 @@ function drawGrid() {
     }
 
     // Add configured guardrails for the grid to assist on other resoltions
-    guardRails.forEach((guardRail) => {
-        canvas.add(new fabric.Line(guardRail.line, {
-            stroke: guardRail.stroke || '#ccc',
-            strokeDashArray: [w, w],
-            strokeWidth: guardRail.strokeWidth || 4,
-            opacity: guardRail.opacity || 0.5,
-            selectable: false,
-            zIndex: -1
-        }));
-    })
+    drawGuardrails();
     canvas.renderAll();
 }
 
@@ -624,6 +668,7 @@ function copyObject() {
     // later to reflect on the copy.
     canvas.getActiveObject().clone(function (cloned) {
         _clipboard = cloned;
+        _clipboard.isGuardrail = canvas.getActiveObject().isGuardrail;
     });
 }
 
@@ -631,6 +676,7 @@ function pasteObject() {
     if (_clipboard === null) return;
     // clone again, so you can do multiple copies.
     _clipboard.clone(function (clonedObj) {
+        clonedObj.isGuardrail = _clipboard.isGuardrail;
         canvas.discardActiveObject();
         clonedObj.set({
             left: clonedObj.left + 10,
@@ -965,8 +1011,14 @@ function deleteImage(name) {
 
 function changeColor(elem) {
     var obj = canvas.getActiveObject();
+    let newColor = window.getComputedStyle(elem).backgroundColor;
     // console.log(window.getComputedStyle(elem).backgroundColor);
-    setStyle(obj, "fill", window.getComputedStyle(elem).backgroundColor);
+    // for guardrails we need to change the stroke color:
+    if (obj.type === 'line') {
+        obj.set({stroke: newColor});
+    } else {
+        setStyle(obj, "fill", newColor);
+    }
     canvas.renderAll();
 }
 
@@ -1052,6 +1104,8 @@ function fontSize(direction) {
             if ((idx + direction) < sizes.length && (idx + direction) > 0) {
                 setStyle(obj, "fontSize", sizes[idx + direction]);
             }
+        } else if (obj.type === 'line') {
+            obj.set({strokeWidth: obj.strokeWidth + direction});
         }
     }
     canvas.requestRenderAll();

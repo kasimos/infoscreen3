@@ -32,6 +32,14 @@
         top: 0px !important;
         left: 0px !important;
     }
+
+	.hidden-button {
+		display: none !important;
+	}
+
+	.buttongroup {
+		margin-left: 10px !important;
+	}
 </style>
 {% endblock %}
 
@@ -85,6 +93,21 @@
 				<span id="currentTransition" class="section"></span>
 			</div>
 			<i class="dropdown icon"></i>
+		</div>
+		<div class="item">
+			<div id="guardrails" class="ui checkbox toggle">
+				<input id="guardrail-edit" type="checkbox" />
+				<label for="guardrail-edit">{{ t("navs.editGuardrail") }}
+				</label>
+			</div>
+			<div class="ui inverted buttons buttongroup">
+				<a class="ui basic icon button hidden-button" id="guardrail-reset" data-content="{{t("admin.tooltip.guardrailsUndo")}}">
+					<i class="ui undo icon"></i>
+				</a>
+				<a class="ui basic icon button hidden-button" id="guardrail-save" data-content="{{t("admin.tooltip.guardrailsSave")}}">
+					<i class="ui save icon"></i>
+				</a>
+			</div>
 		</div>
 
 		<div class="right menu">

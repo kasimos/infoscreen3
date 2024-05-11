@@ -1,0 +1,182 @@
+{% extends 'layout/admin.twig' %}
+
+{% block header %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="/js/sharedScript.js"></script>
+    {% if config.useLocalAssets %}
+        <script src="/assets/jquery.jeditable.min.js"></script>
+    {% else %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/2.0.6/jquery.jeditable.min.js"></script>
+    {% endif %}
+    <script>
+       var socket = io("{{ config.serverUrl }}/admin-settings");
+    </script>
+{% endblock %}
+
+
+{% block body %}
+        <div class="ui primary top attached pointing menu" style="height: 5vh;">
+        <a class="header item" href="/admin">
+            {{ t("infoscreen") }}
+        </a>
+        <div class="right menu">
+            <h2>{{ t("actions.settings") }}</h2>
+        </div>
+        <div class="right menu">
+            <div class="item">
+                <a href="/logout" class="ui red basic button">{{ t("auth.logout") }}</a>
+            </div>
+        </div>
+    </div>
+    <br/>
+
+        {#<div class="ui basic segment">
+            <h1 class="ui center aligned inverted header">
+                {{ t ("infoscreen") }}
+            </h1>
+            <div class="right menu">
+                <div class="item">
+                    <a href="/" class="ui green basic button">{{ t("admin.settings.home") }}</a>
+                </div>
+                <div class="item">
+                    <a href="/logout" class="ui red basic button">{{ t("auth.logout") }}</a>
+                </div>
+            </div>
+        </div>#}
+    <div class="column">
+        <div class="ui three column grid">
+
+        <div class="ui five wide column">
+            <div class="ui inverted basic segment">
+                <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.displays") }}</h3>
+                <button class="ui basic inverted button right aligned" onclick="createNewDisplay();">{{ t("admin.settings.createNewDisplay") }}</button>
+                <div id="displays" class="ui sortable display slides list">
+                {% for display in config.displays %}
+                    <div class="ui green message item" id="{{ display.id }}" style="border: 1px solid black;">
+                        <div class="right floated content">
+                            <button class="ui small basic inverted icon button"
+                                    onclick="removeDisplay('{{ display.id }}');"><i class="delete icon"></i>
+                            </button>
+
+                        </div>
+                        <div class="content">
+                            <div class="editable display">{{ display.name }} </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="ui six wide column">
+            <div class="ui inverted basic segment">
+            <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.guardrails") }}</h3>
+                <button class="ui basic inverted button right aligned" onclick="createNewGuardrail();">{{ t("admin.settings.createNewGuardRail") }}</button>
+                <div id="guardrails" class="ui sortable guardrail slides list">
+                {% for guardRail in config.guardRails %}
+                    <div class="ui green message item" id="{{ loop.index0 }}" style="border: 1px solid black;">
+                        <div class="right floated content">
+                            <button class="ui small basic inverted icon button"
+                                    onclick="removeGuadrail('{{ loop.index0}}');"><i class="delete icon"></i>
+                            </button>
+                        </div>
+                        <div class="content">
+                            <div class="editable guardrail">{{ guardRail|json_encode() }} </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="ui four wide column">
+            <div class="ui inverted basic segment">
+                <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.otherSettings") }}</h3>
+                <div class="ui form ">
+                <div class="ui labeled input">
+                    <label class="ui right pointing label grey" for="accesskey">{{ t("admin.settings.accesskey") }}</label>
+                    <label class="ui editable left pointing label setting" id="accesskey">{{ config.accesskey }}</label>
+                </div>
+                <div class="ui labeled input">
+                    <label class="ui right pointing label grey" for="streamKey">{{ t("admin.settings.streamKey") }}</label>
+                    <label class="ui editable left pointing label setting" id="streamKey">{{ config.streamKey }}</label>
+                </div>
+                <div class="ui labeled input">
+                    <label class="ui right pointing label grey" for="streamName">{{ t("admin.settings.streamName") }}</label>
+                    <label class="ui editable left pointing label setting" id="streamName">{{ config.streamName }}</label>
+                </div>
+                <div class="ui labeled input">
+                    <label class="ui right pointing label grey" for="streamProtocol">{{ t("admin.settings.streamProtocol") }}</label>
+                    <label class="ui editable left pointing label setting" id="streamProtocol">{{ config.streamProtocol }}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+ <script>
+        function emit(eventName, data) {
+            socket.emit(eventName, data);
+        }
+        function createNewDisplay() {
+            emit("settings.createDisplay", {});
+        }
+
+        $(".sortable.display").sortable({
+            beforeStop: function (event, element) {
+                var sortedIDs = $(".sortable").sortable("toArray");
+                emit("settings.reorderDisplays", {sortedIDs: sortedIDs});
+            }
+        }).disableSelection();
+
+        $('.editable.display').editable(function (value, settings) {
+            var id = $(this).parent().parent().attr("id");
+            emit("settings.renameDisplay", {id: id, name: value});
+            return (value);
+        }, {
+            submit: 'rename display',
+            tooltip: "Doubleclick to rename...",
+            event: "dblclick",
+            cssclass: 'ui mini nopadded form',
+            cancelcssclass: 'ui tiny basic negative button',
+            submitcssclass: 'ui tiny basic positive button',
+        });
+
+        $('.editable.setting').editable(function (value, settings) {
+            var id = $(this).attr("id");
+            emit("settings.changeSettingValue", {id: id, value: value});
+            return (value);
+        }, {
+            submit: 'change value',
+            tooltip: "Doubleclick to edit...",
+            event: "dblclick",
+            cssclass: 'ui mini nopadded form',
+            cancelcssclass: 'ui tiny basic negative button',
+            submitcssclass: 'ui tiny basic positive button',
+        });
+
+        $('.editable.guardrail').editable(function (value, settings) {
+            var id = $(this).parent().parent().attr("id");
+            emit("settings.editGuardrail", {id: id, value: value});
+            return (value);
+        }, {
+            submit: 'apply',
+            tooltip: "Doubleclick to edit...",
+            event: "dblclick",
+            cssclass: 'ui nopadded form center aligned',
+            submitcssclass: 'ui tiny basic positive button',
+        });
+
+        function removeDisplay(id) {
+            var obj = {id: id};
+            if (confirm("Really delete this display?")) {
+                emit('settings.removeDisplay', obj);
+            }
+        }
+        socket.on("callback.settingsReload", function() {
+             document.location.reload(true);
+        });
+        socket.on("callback.error", function (data) {
+            alert(data);
+        });
+
+    </script>
+{% endblock %}
