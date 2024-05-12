@@ -51,6 +51,7 @@
     "rate-limiter-flexible": "2.4.1",
     "socket.io": "4.6.1",
     "sqlite3": "5.1.5",
+    "tar": "^7.1.0",
     "twig": "1.15.4",
     "utf-8-validate": "5.0.10",
     "xmlhttprequest-ssl": "2.0.0"
