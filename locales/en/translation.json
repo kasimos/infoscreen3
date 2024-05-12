@@ -143,7 +143,12 @@
     "settings": {
       "home": "Home",
       "displays": "Displays",
+      "import": "Import Settings",
+      "export": "Export Settings",
+      "importData": "Import Data",
+      "exportData": "Export Data",
       "guardrails": "Guard Rails",
+      "createNewGuardRail": "Create new Guard Rail",
       "otherSettings": "Other Settings",
       "createNewDisplay": "Create New Display",
       "accesskey": "Accesskey",

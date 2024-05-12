@@ -192,6 +192,14 @@ export default class display {
         return this.bundleManager?.getBundle(this.serverOptions.currentBundle);
     }
 
+    getBundleName() {
+        return this.serverOptions.currentBundle;
+    }
+
+    getDisplayId() {
+        return this.serverOptions.displayId;
+    }
+
     toggleBlackout() {
         this.serverOptions.blackout = this.serverOptions.blackout === false;
         this.io.emit("callback.blackout", { serverOptions: this.serverOptions });
