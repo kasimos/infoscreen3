@@ -11,6 +11,19 @@
     <script>
        var socket = io("{{ config.serverUrl }}/admin-settings");
     </script>
+
+    <style>
+        .settingpair {
+            width: 100%;
+        }
+        .setting {
+            width: 50%;
+        }
+        .hidden-button {
+            z-index: -1;
+            position: absolute;
+        }
+    </style>
 {% endblock %}
 
 
@@ -67,10 +80,55 @@
                 </div>
             </div>
         </div>
-        <div class="ui six wide column">
+        <div class="ui ten wide column">
             <div class="ui inverted basic segment">
-            <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.guardrails") }}</h3>
-                <button class="ui basic inverted button right aligned" onclick="createNewGuardrail();">{{ t("admin.settings.createNewGuardRail") }}</button>
+                <h3 class="ui center aligned inverted dividing header setting">{{ t("actions.settings") }}</h3>
+			    <div class="ui inverted buttons buttongroup">
+                    <a id="settings-export" class="ui green right floated button">
+                        <i class="ui download icon"></i> 
+                        {{t("admin.settings.export")}}
+                    </a>
+                    <input type="file" (change)="fileEvent($event)" class="inputfile hidden-button" id="settings-import" />
+                    <label for="settings-import" class="ui blue right floated button">
+                        <i class="ui upload icon"></i> 
+                        {{t("admin.settings.import")}}
+                    </label>
+                </div>
+			    <div class="ui inverted buttons buttongroup">
+                    <a id="settings-export-data" class="ui green right floated button">
+                        <i class="ui download icon"></i> 
+                        {{t("admin.settings.exportData")}}
+                    </a>
+                    <input type="file" (change)="fileEvent($event)" class="inputfile hidden-button" id="settings-import-data" />
+                    <label for="settings-import-data" class="ui blue right floated button">
+                        <i class="ui upload icon"></i> 
+                        {{t("admin.settings.importData")}}
+                    </label>
+                </div>
+                <div class="ui form ">
+                    <div class="ui labeled input settingpair">
+                        <label class="ui right pointing label grey setting" for="accesskey">{{ t("admin.settings.accesskey") }}</label>
+                        <label class="ui editable left pointing label setting" id="accesskey">{{ config.accesskey }}</label>
+                    </div>
+                    <br>
+                    <div class="ui labeled input settingpair">
+                        <label class="ui right pointing label grey setting" for="streamKey">{{ t("admin.settings.streamKey") }}</label>
+                        <label class="ui editable left pointing label setting" id="streamKey">{{ config.streamKey }}</label>
+                    </div>
+                    <br>
+                    <div class="ui labeled input settingpair">
+                        <label class="ui right pointing label grey setting" for="streamName">{{ t("admin.settings.streamName") }}</label>
+                        <label class="ui editable left pointing label setting" id="streamName">{{ config.streamName }}</label>
+                    </div>
+                    <br>
+                    <div class="ui labeled input settingpair">
+                        <label class="ui right pointing label grey setting" for="streamProtocol">{{ t("admin.settings.streamProtocol") }}</label>
+                        <label class="ui editable left pointing label setting" id="streamProtocol">{{ config.streamProtocol }}</label>
+                    </div>
+                    <br>
+                </div>
+                <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.guardrails") }}</h3>
+                <button class="ui basic inverted button" onclick="createNewGuardrail();">{{ t("admin.settings.createNewGuardRail") }}</button>
                 <div id="guardrails" class="ui sortable guardrail slides list">
                 {% for guardRail in config.guardRails %}
                     <div class="ui green message item" id="{{ loop.index0 }}" style="border: 1px solid black;">
@@ -84,28 +142,6 @@
                         </div>
                     </div>
                 {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="ui four wide column">
-            <div class="ui inverted basic segment">
-                <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.otherSettings") }}</h3>
-                <div class="ui form ">
-                <div class="ui labeled input">
-                    <label class="ui right pointing label grey" for="accesskey">{{ t("admin.settings.accesskey") }}</label>
-                    <label class="ui editable left pointing label setting" id="accesskey">{{ config.accesskey }}</label>
-                </div>
-                <div class="ui labeled input">
-                    <label class="ui right pointing label grey" for="streamKey">{{ t("admin.settings.streamKey") }}</label>
-                    <label class="ui editable left pointing label setting" id="streamKey">{{ config.streamKey }}</label>
-                </div>
-                <div class="ui labeled input">
-                    <label class="ui right pointing label grey" for="streamName">{{ t("admin.settings.streamName") }}</label>
-                    <label class="ui editable left pointing label setting" id="streamName">{{ config.streamName }}</label>
-                </div>
-                <div class="ui labeled input">
-                    <label class="ui right pointing label grey" for="streamProtocol">{{ t("admin.settings.streamProtocol") }}</label>
-                    <label class="ui editable left pointing label setting" id="streamProtocol">{{ config.streamProtocol }}</label>
                 </div>
             </div>
         </div>
@@ -165,17 +201,65 @@
             submitcssclass: 'ui tiny basic positive button',
         });
 
+        $("#settings-export").click(function () {
+                emit('settings.requestExport');
+        });
+
+        $("#settings-import").change(function () {
+            var input = this;
+            var uri = $(this).val();
+            var fileExt = uri.substring(uri.lastIndexOf('.') + 1).toLowerCase();
+            if (input.files && input.files[0]&& (fileExt === "json")) {
+                var fReader = new FileReader();
+                fReader.onload = function (e) {
+                    emit('settings.requestImport', e.target.result);
+                }
+                fReader.readAsText(input.files[0]);
+            }
+        });
+
+        $("#settings-export-data").click(function () {
+                emit('settings.requestExportData');
+        });
+
+
         function removeDisplay(id) {
             var obj = {id: id};
             if (confirm("Really delete this display?")) {
                 emit('settings.removeDisplay', obj);
             }
         }
+
         socket.on("callback.settingsReload", function() {
              document.location.reload(true);
         });
+
         socket.on("callback.error", function (data) {
             alert(data);
+        });
+
+        socket.on("callback.exportSettings", function(data) {
+            const jsonBlob = new Blob([JSON.stringify(data, null, "\t")], {
+                type: 'application/json',
+            });
+            const url = URL.createObjectURL(jsonBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        socket.on("callback.exportData", function(data) {
+            const dataBlob = new Blob([data], {
+                type: 'application/tar+gzip',
+            });
+            const url = URL.createObjectURL(dataBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.tar.tgz';
+            a.click();
+            URL.revokeObjectURL(url);
         });
 
     </script>
