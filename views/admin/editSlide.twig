@@ -230,6 +230,10 @@
 				<div onclick="changeColor(this);" class="ui purple icon button"></div>
 				<div onclick="changeColor(this);" class="ui pink icon button"></div>
 				<div onclick="changeColor(this);" class="ui brown icon button"></div>
+				{% for color in config.colors %}
+				<div onclick="changeColor(this);" class="ui icon button" style="background-color:{{ color }}"></div>
+                {% endfor %}
+
 			</div>
 		</div>
 		<div class="item">
