@@ -343,7 +343,7 @@
                     }
 
                     // check file size
-                    if (parseInt(file.size / 1024) > 2050) {
+                    if (parseInt(file.size / 1024) > {{ config.maxFileSize }}) {
                         alert("File \"" + file.name + "\" is too big. Max allowed size is 2 MB.");
                         return false;
                     }

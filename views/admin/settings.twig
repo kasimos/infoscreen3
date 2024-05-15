@@ -126,6 +126,11 @@
                         <label class="ui editable left pointing label setting" id="streamProtocol">{{ config.streamProtocol }}</label>
                     </div>
                     <br>
+                    <div class="ui labeled input settingpair">
+                        <label class="ui right pointing label grey setting" for="maxFileSize">{{ t("admin.settings.maxFileSize") }}</label>
+                        <label class="ui editable left pointing label setting" id="maxFileSize">{{ config.maxFileSize }}</label>
+                    </div>
+                    <br>
                 </div>
                 <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.guardrails") }}</h3>
                 <button class="ui basic inverted button" onclick="createNewGuardrail();">{{ t("admin.settings.createNewGuardRail") }}</button>

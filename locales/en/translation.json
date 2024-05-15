@@ -154,7 +154,8 @@
       "accesskey": "Accesskey",
       "streamKey": "Streamkey",
       "streamName": "Streamname",
-      "streamProtocol": "StreamProtocol"
+      "streamProtocol": "StreamProtocol",
+      "maxFileSize": "Maximum Filesize for Uploads in kB"
     }
   },
   "index": {

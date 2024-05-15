@@ -46,6 +46,7 @@ export default {
     "mediaServer": true,//(process.env.MEDIASERVER == "true") ? true : false,       // local streaming server for rtmp, see docs how to use
     "defaultLocale": process.env.LOCALE || "en",      // currently supported values are: "en","fi"
     "accesskey": settingsData.accesskey || false,
+    "maxFileSize": settingsData.maxFileSize || 2050,
     "guardRails": settingsData.guardRails || defaultGuardRails,
     /*
      * Plugins
