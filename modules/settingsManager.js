@@ -9,7 +9,8 @@ const usableParams = [
     'streamProtocol',
     'accesskey',
     'guardRails',
-    'displays'
+    'displays',
+    'maxFileSize'
 ];
 
 export default class SettingsManager {
