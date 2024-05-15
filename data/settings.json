@@ -1,0 +1,36 @@
+{
+	"streamKey": "INFOSCREEN3",
+	"streamName": "live",
+	"streamProtocol": "ws",
+	"accesskey": false,
+	"guardRails": [{		
+        "line": [240, 0, 240, 1080],
+        "stroke": "#ccc",
+        "strokeWidth": 4,
+        "opacity": 0.5
+    },
+    {
+        "line": [1680, 0, 1680, 1080],
+        "stroke": "#ccc",
+        "strokeWidth": 4,
+        "opacity": 0.5
+    }
+	],
+	"displays": [
+		{
+			"name": "Main Stage New",
+			"bundle": "default",
+			"id": 0
+		},
+		{
+			"name": "Other Display",
+			"bundle": "default",
+			"id": 1
+		},
+		{
+			"name": "Yet Another Display",
+			"bundle": "default",
+			"id": 2
+		}
+	]
+}
