@@ -10,7 +10,8 @@ const usableParams = [
     'accesskey',
     'guardRails',
     'displays',
-    'maxFileSize'
+    'maxFileSize',
+    'colors'
 ];
 
 export default class SettingsManager {

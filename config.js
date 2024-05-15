@@ -47,6 +47,7 @@ export default {
     "defaultLocale": process.env.LOCALE || "en",      // currently supported values are: "en","fi"
     "accesskey": settingsData.accesskey || false,
     "maxFileSize": settingsData.maxFileSize || 2050,
+    "colors": settingsData.colors || [],
     "guardRails": settingsData.guardRails || defaultGuardRails,
     /*
      * Plugins

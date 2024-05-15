@@ -118,6 +118,13 @@ export default class settings {
                     socket.emit("callback.error", "Changing Setting value failed");
                     return
                 }
+                
+                try {
+                    const jsonValue = JSON.parse(data.value)
+                    data.value = jsonValue
+                } catch (e) {
+                    //do nothing
+                }
                 if (data.id === 'accesskey' && data.value.toLowerCase() === "false") {
                     data.value = false
                 }

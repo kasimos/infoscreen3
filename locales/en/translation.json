@@ -155,7 +155,8 @@
       "streamKey": "Streamkey",
       "streamName": "Streamname",
       "streamProtocol": "StreamProtocol",
-      "maxFileSize": "Maximum Filesize for Uploads in kB"
+      "maxFileSize": "Maximum Filesize for Uploads in kB",
+      "colors": "Custom Colors in Array"
     }
   },
   "index": {
