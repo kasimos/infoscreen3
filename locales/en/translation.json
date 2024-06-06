@@ -156,7 +156,8 @@
       "streamName": "Streamname",
       "streamProtocol": "StreamProtocol",
       "maxFileSize": "Maximum Filesize for Uploads in kB",
-      "colors": "Custom Colors in Array"
+      "colors": "Custom Colors in Array",
+      "useLocalAssets": "Use local assets"
     }
   },
   "index": {

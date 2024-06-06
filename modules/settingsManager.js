@@ -11,7 +11,8 @@ const usableParams = [
     'guardRails',
     'displays',
     'maxFileSize',
-    'colors'
+    'colors',
+    'useLocalAssets'
 ];
 
 export default class SettingsManager {

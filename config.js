@@ -42,7 +42,7 @@ export default {
     "streamKey": settingsData.streamKey || 'INFOSCREEN3',  // stream key for rtmp end point
     "streamName": settingsData.streamName || 'live',
     "streamProtocol": settingsData.streamProtocol || 'http',
-    "useLocalAssets": false,    // used to load javascript libraries locally from /public/assets
+    "useLocalAssets": settingsData.useLocalAssets || false,    // used to load javascript libraries locally from /public/assets
     "mediaServer": true,//(process.env.MEDIASERVER == "true") ? true : false,       // local streaming server for rtmp, see docs how to use
     "defaultLocale": process.env.LOCALE || "en",      // currently supported values are: "en","fi"
     "accesskey": settingsData.accesskey || false,
