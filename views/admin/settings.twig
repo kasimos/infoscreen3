@@ -1,11 +1,12 @@
 {% extends 'layout/admin.twig' %}
 
 {% block header %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
     <script src="/js/sharedScript.js"></script>
     {% if config.useLocalAssets %}
+        <script src="/assets/socket.io.min.js"></script>
         <script src="/assets/jquery.jeditable.min.js"></script>
     {% else %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/2.0.6/jquery.jeditable.min.js"></script>
     {% endif %}
     <script>
@@ -134,6 +135,11 @@
                     <div class="ui labeled input settingpair">
                         <label class="ui right pointing label grey setting" for="colors">{{ t("admin.settings.colors") }}</label>
                         <label class="ui editable left pointing label setting" id="colors">{{ config.colors }}</label>
+                    </div>
+                    <br>
+                    <div class="ui labeled input settingpair">
+                        <label class="ui right pointing label grey setting" for="useLocalAssets">{{ t("admin.settings.useLocalAssets") }}</label>
+                        <label class="ui editable left pointing label setting" id="useLocalAssets">{{ config.useLocalAssets }}</label>
                     </div>
                     <br>
                 </div>
