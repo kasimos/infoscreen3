@@ -44,7 +44,8 @@
     "duration": "duration",
     "display": "display",
     "slideName": "Slide Name",
-    "editGuardrail": "Guardrail Editmode"
+    "editGuardrail": "Guardrail Editmode",
+    "editCrazySelector": "Visible Selector"
   },
   "admin": {
     "dashboard": {

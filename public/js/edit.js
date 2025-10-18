@@ -255,6 +255,19 @@ $("#guardrail-save").click(function () {
     socket.emit('admin.editGuardrails', { guardRails: newGuardrails });
 });
 
+$("#crazySelector").change(function () {
+    let newValue = $(this)[0].checked;
+    if(newValue) {
+        fabric.Object.prototype.borderScaleFactor = 10
+        fabric.Object.prototype.borderColor = '#FF00FF'
+        fabric.Object.prototype.cornerColor = '#00FFFF'
+    } else {
+        fabric.Object.prototype.borderScaleFactor = 1
+        fabric.Object.prototype.borderColor = "rgba(102,153,255,0.75)"
+        fabric.Object.prototype.cornerColor = "rgba(102,153,255,0.75)"
+    }
+});
+
 function saveState() {
     if (undoData.length >= 15) {
         undoData.shift();
