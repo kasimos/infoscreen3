@@ -142,6 +142,11 @@
                         <label class="ui editable left pointing label setting" id="useLocalAssets">{{ config.useLocalAssets }}</label>
                     </div>
                     <br>
+                    <div class="ui labeled input settingpair">
+                        <label class="ui right pointing label grey setting" for="exportDataCompression">{{ t("admin.settings.exportDataCompression") }}</label>
+                        <label class="ui editable left pointing label setting" id="exportDataCompression">{{ config.exportDataCompression }}</label>
+                    </div>
+                    <br>                    
                 </div>
                 <h3 class="ui center aligned inverted dividing header">{{ t("admin.settings.guardrails") }}</h3>
                 <button class="ui basic inverted button" onclick="createNewGuardrail();">{{ t("admin.settings.createNewGuardRail") }}</button>
@@ -280,13 +285,18 @@
         });
 
         socket.on("callback.exportData", function(data) {
+            let useCompression = false
+            {% if config.exportDataCompression %}
+            useCompression = true
+            {% endif %}
+
             const dataBlob = new Blob([data], {
-                type: 'application/tar+gzip',
+                type: useCompression ? 'application/tar+gzip' : 'application/tar'
             });
             const url = URL.createObjectURL(dataBlob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'data.tar.tgz';
+            a.download = 'data.tar' + (useCompression ? '.tgz' : '');
             a.click();
             URL.revokeObjectURL(url);
         });

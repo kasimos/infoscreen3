@@ -159,6 +159,7 @@
       "streamName": "Streamname",
       "streamProtocol": "StreamProtocol",
       "maxFileSize": "Maximum Filesize for Uploads in kB",
+      "exportDataCompression": "Use Data Export Compression",
       "colors": "Custom Colors in Array",
       "useLocalAssets": "Use local assets"
     }

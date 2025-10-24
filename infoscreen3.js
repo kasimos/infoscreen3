@@ -4,8 +4,8 @@
  * Module dependencies.
  */
 import chalk from 'chalk';
-import config from './config.js';
 import { app, server } from "./app.js";
+import config from './config.js';
 
 
 /**

@@ -1,5 +1,5 @@
-import 'dotenv/config'
-import SettingsManager from './modules/settingsManager.js'
+import 'dotenv/config';
+import SettingsManager from './modules/settingsManager.js';
 
 const host = "127.0.0.1"  // ip of the infoscreen interface, use external address if not develoment
 const port = 8000;        // port for infoscreen
@@ -47,6 +47,7 @@ export default {
     "defaultLocale": process.env.LOCALE || "en",      // currently supported values are: "en","fi"
     "accesskey": settingsData.accesskey || false,
     "maxFileSize": settingsData.maxFileSize || 2050,
+    "exportDataCompression": settingsData.exportDataCompression || false,
     "colors": settingsData.colors || [],
     "guardRails": settingsData.guardRails || defaultGuardRails,
     /*

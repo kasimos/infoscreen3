@@ -11,6 +11,7 @@ const usableParams = [
     'guardRails',
     'displays',
     'maxFileSize',
+    'exportDataCompression',
     'colors',
     'useLocalAssets'
 ];
@@ -52,7 +53,7 @@ export default class SettingsManager {
         try{
             await create(
             {
-              gzip: true,
+              gzip: config["exportDataCompression"],
               file:"./data/data.tgz"
             },
             ["./data/backgrounds", "./data/bundles", "./data/video"]
