@@ -14,6 +14,14 @@
             <h1 class="ui center aligned inverted header">
                 {{ t ("infoscreen") }}
             </h1>
+            <div class="right menu">
+                <div class="item">
+                    <a href="/admin/settings" class="ui black basic button">{{ t("actions.settings") }}</a>
+                </div>
+                <div class="item">
+                    <a href="/logout" class="ui red basic button">{{ t("auth.logout") }}</a>
+                </div>
+            </div>
             <h2 class="ui center aligned inverted dividing header">{{ t("index.displays") }}</h2>
 
             <div class="ui three stackable cards" id="displayList">

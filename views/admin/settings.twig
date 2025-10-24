@@ -238,6 +238,19 @@
                 emit('settings.requestExportData');
         });
 
+        $("#settings-import-data").change(function () {
+            var input = this;
+            var uri = $(this).val();
+            var fileExt = uri.substring(uri.lastIndexOf('.') + 1).toLowerCase();
+            if (input.files && input.files[0]/*&& (fileExt === "json")*/) {
+                var fReader = new FileReader();
+                fReader.onload = function (e) {
+                    emit('settings.requestImportData', e.target.result);
+                }
+                fReader.readAsArrayBuffer(input.files[0]);
+            }
+        });
+
 
         function removeDisplay(id) {
             var obj = {id: id};

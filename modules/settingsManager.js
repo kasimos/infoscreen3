@@ -1,7 +1,7 @@
 import fs from 'fs';
-import { create } from 'tar'
-import cli from './cli.js'
+import { create, extract } from 'tar';
 import config from '../config.js';
+import cli from './cli.js';
 
 const usableParams = [
     'streamKey',
@@ -62,6 +62,22 @@ export default class SettingsManager {
         } catch(e) {
             cli.error("Error during Data Export " + e);
         }
+    }
+
+    async importData(data) {
+        const importFilePath = './data/import'
+        try{
+            //first save file to local importFolder, will be removed in anycase
+            fs.writeFileSync(importFilePath, data)
+            await extract(
+            {
+              file:importFilePath
+            }
+          );
+        } catch(e) {
+            cli.error("Error during Data Export " + e);
+        }
+        fs.rmSync(importFilePath)
     }
 
 }

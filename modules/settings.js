@@ -1,9 +1,8 @@
-import fs from 'fs';
 import config from '../config.js';
 import cli from './cli.js';
 
-import display from './display.js';
 import admin from './admin.js';
+import display from './display.js';
 import SettingsManager from './settingsManager.js';
 
 let settingsManager = new SettingsManager()
@@ -194,6 +193,14 @@ export default class settings {
             socket.on('settings.requestExportData', async function () {
                 socket.emit("callback.exportData", await settingsManager.exportData());
             });
+            socket.on('settings.requestImportData', async function (data) {
+                try {
+                    socket.emit("callback.importData", await settingsManager.importData(data));
+                }catch (e) {
+                    cli.error('Importing settings failed:' + e);
+                    socket.emit("callback.error", "Error importing settings, Please make sure it is a proper JSON.");
+                }   
+            })
         }); // io
     }
 
