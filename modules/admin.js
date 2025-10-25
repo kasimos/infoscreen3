@@ -2,15 +2,7 @@ import fs from 'fs';
 import config from '../config.js';
 import cli from './cli.js';
 import SettingsManager from './settingsManager.js';
-
-/** Generate an uuid
- * @url https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript#2117523 **/
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
+import { checkAndSanitizeFilePathName, uuidv4 } from './utils.js';
 
 let settingsManager = new SettingsManager()
 
@@ -290,7 +282,8 @@ export default class admin {
 
             socket.on("admin.createBundle", function (data) {
                 try {
-                    if (!fs.existsSync("data/bundles" + data.dir)) {
+                    data.dir = checkAndSanitizeFilePathName(data.dir)
+                    if (!fs.existsSync("data/bundles/" + data.dir)) {
                         fs.mkdirSync("data/bundles/" + data.dir);
                         fs.mkdirSync("data/bundles/" + data.dir + "/images");
                         fs.mkdirSync("data/bundles/" + data.dir + "/render");
@@ -565,6 +558,8 @@ export default class admin {
 
 
                 try {
+                    data.bundleName = checkAndSanitizeFilePathName(data.bundleName);
+                    filename = checkAndSanitizeFilePathName(filename);
                     let bundle = self.bundleManager.getBundle(data.bundleName);
                     if (!bundle) {
                         throw "no active bundle";
@@ -618,14 +613,17 @@ export default class admin {
             socket.on('edit.uploadImage', function (data) {
 
                 let filename = data.name.replace(/\.[^/.]+$/, "");
-                let ext = "." + data.type.replace("image/", "");
+                let ext = data.type.replace("image/", "");
                 if (filename === "") {
                     filename = uuidv4();
                 }
                 try {
                     let replace = "^data:" + data.type + ";base64,";
                     let re = new RegExp(replace, "g");
-
+                    data.bundleName = checkAndSanitizeFilePathName(data.bundleName);
+                    filename = checkAndSanitizeFilePathName(filename);
+                    ext =  "." + checkAndSanitizeFilePathName(ext)
+                    
                     fs.writeFileSync("./data/bundles/" + data.bundleName + "/images/" + filename + ext, data.imageData.replace(re, ""), "base64");
                     cli.success("upload of " + filename + ext);
                     socket.emit("callback.edit.updateFileList", {});
@@ -638,7 +636,20 @@ export default class admin {
 
             socket.on('edit.deleteImage', function (data) {
                 try {
+                    data.bundleName = checkAndSanitizeFilePathName(data.bundleName);
+                    data.name = checkAndSanitizeFilePathName(data.name);
                     fs.unlinkSync("./data/bundles/" + data.bundleName + "/images/" + data.name);
+                    cli.success("delete " + data.name);
+                    socket.emit("callback.edit.updateFileList", {});
+                } catch (err) {
+                    cli.error(err, "delete image");
+                    socket.emit("callback.edit.updateFileList", {error: err});
+                }
+            });
+            socket.on('edit.deleteImage', function (data) {
+                try {
+                    data.name = checkAndSanitizeFilePathName(data.name);
+                    fs.unlinkSync("./data/backgrounds/" + data.name);
                     cli.success("delete " + data.name);
                     socket.emit("callback.edit.updateFileList", {});
                 } catch (err) {
