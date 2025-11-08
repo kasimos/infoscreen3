@@ -50,6 +50,7 @@ export default {
     "exportDataCompression": settingsData.exportDataCompression || false,
     "colors": settingsData.colors || [],
     "guardRails": settingsData.guardRails || defaultGuardRails,
+    "timeStyle":settingsData.timeStyle || "",
     /*
      * Plugins
      */

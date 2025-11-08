@@ -13,7 +13,8 @@ const usableParams = [
     'maxFileSize',
     'exportDataCompression',
     'colors',
-    'useLocalAssets'
+    'useLocalAssets',
+    'timeStyle'
 ];
 
 export default class SettingsManager {
