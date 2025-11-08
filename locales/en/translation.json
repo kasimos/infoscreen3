@@ -165,6 +165,7 @@
       "maxFileSize": "Maximum Filesize for Uploads in kB",
       "exportDataCompression": "Use Data Export Compression",
       "colors": "Custom Colors in Array",
+      "timeStyle": "CSS Style for the slidetime",
       "useLocalAssets": "Use local assets"
     }
   },
